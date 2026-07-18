@@ -238,3 +238,109 @@ if (!function_exists('refresh_permissions')) {
         Session::set('user_permissions', $permissionModel->getByUser((int) $userId));
     }
 }
+
+if (!function_exists('upload_file')) {
+    /**
+     * Upload a file to the storage directory.
+     *
+     * @param array $file The $_FILES entry.
+     * @param string $directory Relative directory under storage/uploads/.
+     * @param array $allowedExtensions Lowercase extensions without dot.
+     * @param int $maxBytes Maximum file size in bytes.
+     * @return string|null Relative path on success, null on failure.
+     */
+    function upload_file(array $file, string $directory, array $allowedExtensions, int $maxBytes): ?string
+    {
+        if (!isset($file['tmp_name']) || empty($file['tmp_name'])) {
+            return null;
+        }
+
+        if ($file['error'] !== UPLOAD_ERR_OK) {
+            return null;
+        }
+
+        if ($file['size'] > $maxBytes) {
+            return null;
+        }
+
+        $originalName = basename($file['name']);
+        $extension    = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
+
+        if (!in_array($extension, $allowedExtensions, true)) {
+            return null;
+        }
+
+        // Basic MIME validation against the allowed extensions.
+        $mimeType = mime_content_type($file['tmp_name']);
+        $validMimes = [
+            'jpg'  => ['image/jpeg'],
+            'jpeg' => ['image/jpeg'],
+            'png'  => ['image/png'],
+            'webp' => ['image/webp'],
+        ];
+
+        if (isset($validMimes[$extension]) && !in_array($mimeType, $validMimes[$extension], true)) {
+            return null;
+        }
+
+        $uploadDir = ROOT_PATH . '/storage/uploads/' . trim($directory, '/');
+
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
+        $filename  = bin2hex(random_bytes(16)) . '.' . $extension;
+        $targetPath = $uploadDir . '/' . $filename;
+
+        if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
+            return null;
+        }
+
+        return trim($directory, '/') . '/' . $filename;
+    }
+}
+
+if (!function_exists('delete_file')) {
+    /**
+     * Delete a file from the storage/uploads directory.
+     *
+     * @param string|null $relativePath
+     * @return bool
+     */
+    function delete_file(?string $relativePath): bool
+    {
+        if (empty($relativePath)) {
+            return false;
+        }
+
+        $file = realpath(ROOT_PATH . '/storage/uploads/' . ltrim($relativePath, '/'));
+        $base = realpath(ROOT_PATH . '/storage/uploads');
+
+        if ($file === false || $base === false || !str_starts_with($file, $base)) {
+            return false;
+        }
+
+        if (!is_file($file)) {
+            return false;
+        }
+
+        return unlink($file);
+    }
+}
+
+if (!function_exists('upload_url')) {
+    /**
+     * Generate a public URL for a stored upload.
+     *
+     * @param string|null $relativePath
+     * @return string
+     */
+    function upload_url(?string $relativePath): string
+    {
+        if (empty($relativePath)) {
+            return '';
+        }
+
+        return base_url('uploads/' . ltrim($relativePath, '/'));
+    }
+}

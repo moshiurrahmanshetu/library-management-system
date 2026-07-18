@@ -153,7 +153,15 @@ class Router
     private function compileRoute(string $uri): string
     {
         $escaped = preg_quote($uri, '#');
-        $pattern = preg_replace('#\\{([a-zA-Z_][a-zA-Z0-9_]*)\\}#', '(?P<$1>[^/]+)', $escaped);
+        $pattern = preg_replace_callback(
+            '#\\{([a-zA-Z_][a-zA-Z0-9_]*)\\}#',
+            function (array $matches): string {
+                $name = $matches[1];
+                $segmentPattern = $name === 'path' ? '.+' : '[^/]+';
+                return '(?P<' . $name . '>' . $segmentPattern . ')';
+            },
+            $escaped
+        );
 
         return '#^' . $pattern . '$#';
     }

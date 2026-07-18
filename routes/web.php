@@ -252,6 +252,287 @@ $router->post('users/update-role/{id}', function (int $id) use ($authMiddleware,
 });
 
 // ------------------------------------------------------------------
+// File upload proxy
+// ------------------------------------------------------------------
+
+$router->get('uploads/{path}', function (string $path) use ($authMiddleware, $csrfMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    (new \App\Controllers\FileController())->serve($path);
+});
+
+// ------------------------------------------------------------------
+// Library master data routes (categories, authors, publishers, shelves)
+// ------------------------------------------------------------------
+
+$router->get('categories', function () use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('books.view');
+    (new \App\Controllers\CategoryController())->index();
+});
+
+$router->get('categories/create', function () use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('books.create');
+    (new \App\Controllers\CategoryController())->create();
+});
+
+$router->post('categories/store', function () use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('books.create');
+    (new \App\Controllers\CategoryController())->store();
+});
+
+$router->get('categories/edit/{id}', function (int $id) use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('books.edit');
+    (new \App\Controllers\CategoryController())->edit($id);
+});
+
+$router->post('categories/update/{id}', function (int $id) use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('books.edit');
+    (new \App\Controllers\CategoryController())->update($id);
+});
+
+$router->post('categories/delete/{id}', function (int $id) use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('books.delete');
+    (new \App\Controllers\CategoryController())->destroy($id);
+});
+
+$router->get('authors', function () use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('books.view');
+    (new \App\Controllers\AuthorController())->index();
+});
+
+$router->get('authors/create', function () use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('books.create');
+    (new \App\Controllers\AuthorController())->create();
+});
+
+$router->post('authors/store', function () use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('books.create');
+    (new \App\Controllers\AuthorController())->store();
+});
+
+$router->get('authors/edit/{id}', function (int $id) use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('books.edit');
+    (new \App\Controllers\AuthorController())->edit($id);
+});
+
+$router->post('authors/update/{id}', function (int $id) use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('books.edit');
+    (new \App\Controllers\AuthorController())->update($id);
+});
+
+$router->post('authors/delete/{id}', function (int $id) use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('books.delete');
+    (new \App\Controllers\AuthorController())->destroy($id);
+});
+
+$router->get('publishers', function () use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('books.view');
+    (new \App\Controllers\PublisherController())->index();
+});
+
+$router->get('publishers/create', function () use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('books.create');
+    (new \App\Controllers\PublisherController())->create();
+});
+
+$router->post('publishers/store', function () use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('books.create');
+    (new \App\Controllers\PublisherController())->store();
+});
+
+$router->get('publishers/edit/{id}', function (int $id) use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('books.edit');
+    (new \App\Controllers\PublisherController())->edit($id);
+});
+
+$router->post('publishers/update/{id}', function (int $id) use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('books.edit');
+    (new \App\Controllers\PublisherController())->update($id);
+});
+
+$router->post('publishers/delete/{id}', function (int $id) use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('books.delete');
+    (new \App\Controllers\PublisherController())->destroy($id);
+});
+
+$router->get('shelves', function () use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('books.view');
+    (new \App\Controllers\ShelfController())->index();
+});
+
+$router->get('shelves/create', function () use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('books.create');
+    (new \App\Controllers\ShelfController())->create();
+});
+
+$router->post('shelves/store', function () use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('books.create');
+    (new \App\Controllers\ShelfController())->store();
+});
+
+$router->get('shelves/edit/{id}', function (int $id) use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('books.edit');
+    (new \App\Controllers\ShelfController())->edit($id);
+});
+
+$router->post('shelves/update/{id}', function (int $id) use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('books.edit');
+    (new \App\Controllers\ShelfController())->update($id);
+});
+
+$router->post('shelves/delete/{id}', function (int $id) use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('books.delete');
+    (new \App\Controllers\ShelfController())->destroy($id);
+});
+
+// ------------------------------------------------------------------
+// Book management routes
+// ------------------------------------------------------------------
+
+$router->get('books', function () use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('books.view');
+    (new \App\Controllers\BookController())->index();
+});
+
+$router->get('books/create', function () use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('books.create');
+    (new \App\Controllers\BookController())->create();
+});
+
+$router->post('books/store', function () use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('books.create');
+    (new \App\Controllers\BookController())->store();
+});
+
+$router->get('books/show/{id}', function (int $id) use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('books.view');
+    (new \App\Controllers\BookController())->show($id);
+});
+
+$router->get('books/edit/{id}', function (int $id) use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('books.edit');
+    (new \App\Controllers\BookController())->edit($id);
+});
+
+$router->post('books/update/{id}', function (int $id) use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('books.edit');
+    (new \App\Controllers\BookController())->update($id);
+});
+
+$router->post('books/delete/{id}', function (int $id) use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('books.delete');
+    (new \App\Controllers\BookController())->destroy($id);
+});
+
+// ------------------------------------------------------------------
+// Book copy routes
+// ------------------------------------------------------------------
+
+$router->get('books/{book_id}/copies', function (int $book_id) use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('books.view');
+    (new \App\Controllers\BookCopyController())->index($book_id);
+});
+
+$router->get('books/{book_id}/copies/create', function (int $book_id) use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('books.edit');
+    (new \App\Controllers\BookCopyController())->create($book_id);
+});
+
+$router->post('books/{book_id}/copies/store', function (int $book_id) use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('books.edit');
+    (new \App\Controllers\BookCopyController())->store($book_id);
+});
+
+$router->get('books/{book_id}/copies/edit/{id}', function (int $book_id, int $id) use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('books.edit');
+    (new \App\Controllers\BookCopyController())->edit($book_id, $id);
+});
+
+$router->post('books/{book_id}/copies/update/{id}', function (int $book_id, int $id) use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('books.edit');
+    (new \App\Controllers\BookCopyController())->update($book_id, $id);
+});
+
+$router->post('books/{book_id}/copies/delete/{id}', function (int $book_id, int $id) use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('books.delete');
+    (new \App\Controllers\BookCopyController())->destroy($book_id, $id);
+});
+
+// ------------------------------------------------------------------
 // Default redirects
 // ------------------------------------------------------------------
 
