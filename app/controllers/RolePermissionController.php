@@ -15,6 +15,24 @@ use App\Models\Role;
 class RolePermissionController extends Controller
 {
     /**
+     * List all roles for permission management.
+     *
+     * @return void
+     */
+    public function index(): void
+    {
+        $this->requireAuth();
+        $this->authorize('role_permissions.view');
+
+        $roleModel = new Role();
+        $roles = $roleModel->all();
+
+        $this->view('role_permissions.index', [
+            'roles' => $roles,
+        ]);
+    }
+
+    /**
      * Show the permission assignment form for a role.
      *
      * @param int $id
@@ -85,5 +103,4 @@ class RolePermissionController extends Controller
 
         $this->redirect('/role-permissions/edit/' . $id);
     }
-
 }

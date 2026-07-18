@@ -24,7 +24,7 @@ class User extends Model
             SELECT u.*, r.name AS role_name
             FROM users u
             JOIN roles r ON r.id = u.role_id
-            WHERE u.id = :id
+            WHERE u.id = :id AND u.deleted_at IS NULL
             LIMIT 1
         ");
         $stmt->execute([':id' => $id]);
@@ -46,7 +46,7 @@ class User extends Model
             SELECT u.*, r.name AS role_name
             FROM users u
             JOIN roles r ON r.id = u.role_id
-            WHERE u.email = :email
+            WHERE u.email = :email AND u.deleted_at IS NULL
             LIMIT 1
         ");
         $stmt->execute([':email' => $email]);
@@ -68,7 +68,7 @@ class User extends Model
             SELECT u.*, r.name AS role_name
             FROM users u
             JOIN roles r ON r.id = u.role_id
-            WHERE u.remember_selector = :selector
+            WHERE u.remember_selector = :selector AND u.deleted_at IS NULL
             LIMIT 1
         ");
         $stmt->execute([':selector' => $selector]);
@@ -87,8 +87,61 @@ class User extends Model
      */
     public function emailExists(string $email, ?int $excludeId = null): bool
     {
-        $sql = "SELECT id FROM users WHERE email = :email";
+        $sql = "SELECT id FROM users WHERE email = :email AND deleted_at IS NULL";
         $params = [':email' => $email];
+
+        if ($excludeId !== null) {
+            $sql .= " AND id != :exclude_id";
+            $params[':exclude_id'] = $excludeId;
+        }
+
+        $sql .= " LIMIT 1";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+
+        return (bool) $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Check whether a username already exists.
+     *
+     * @param string $username
+     * @param int|null $excludeId
+     * @return bool
+     */
+    public function usernameExists(string $username, ?int $excludeId = null): bool
+    {
+        $sql = "SELECT id FROM users WHERE username = :username AND deleted_at IS NULL";
+        $params = [':username' => $username];
+
+        if ($excludeId !== null) {
+            $sql .= " AND id != :exclude_id";
+            $params[':exclude_id'] = $excludeId;
+        }
+
+        $sql .= " LIMIT 1";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+
+        return (bool) $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Check whether a phone number already exists.
+     *
+     * @param string|null $phone
+     * @param int|null $excludeId
+     * @return bool
+     */
+    public function phoneExists(?string $phone, ?int $excludeId = null): bool
+    {
+        if (empty($phone)) {
+            return false;
+        }
+        $sql = "SELECT id FROM users WHERE phone = :phone AND deleted_at IS NULL";
+        $params = [':phone' => $phone];
 
         if ($excludeId !== null) {
             $sql .= " AND id != :exclude_id";
@@ -112,23 +165,38 @@ class User extends Model
     public function create(array $data): int
     {
         $stmt = $this->db->prepare("
-            INSERT INTO users (role_id, name, email, password_hash, status, created_at, updated_at)
-            VALUES (:role_id, :name, :email, :password_hash, :status, NOW(), NOW())
+            INSERT INTO users (
+                role_id, name, email, username, phone, password_hash, status,
+                gender, date_of_birth, address, notes, profile_photo,
+                created_at, updated_at
+            )
+            VALUES (
+                :role_id, :name, :email, :username, :phone, :password_hash, :status,
+                :gender, :date_of_birth, :address, :notes, :profile_photo,
+                NOW(), NOW()
+            )
         ");
 
         $stmt->execute([
-            ':role_id'       => $data['role_id'] ?? 4,
-            ':name'          => $data['name'],
-            ':email'         => $data['email'],
-            ':password_hash' => $data['password_hash'],
-            ':status'        => $data['status'] ?? 'active',
+            ':role_id'         => $data['role_id'] ?? 4,
+            ':name'            => $data['name'],
+            ':email'           => $data['email'],
+            ':username'        => $data['username'] ?? null,
+            ':phone'           => $data['phone'] ?? null,
+            ':password_hash'   => $data['password_hash'],
+            ':status'          => $data['status'] ?? 'active',
+            ':gender'          => $data['gender'] ?? null,
+            ':date_of_birth'   => $data['date_of_birth'] ?? null,
+            ':address'         => $data['address'] ?? null,
+            ':notes'           => $data['notes'] ?? null,
+            ':profile_photo'   => $data['profile_photo'] ?? null,
         ]);
 
         return (int) $this->db->lastInsertId();
     }
 
     /**
-     * Update a user's profile information.
+     * Update a user's profile information (for users themselves).
      *
      * @param int $id
      * @param array $data
@@ -138,14 +206,20 @@ class User extends Model
     {
         $stmt = $this->db->prepare("
             UPDATE users
-            SET name = :name, email = :email, updated_at = NOW()
+            SET name = :name, phone = :phone, gender = :gender,
+                date_of_birth = :date_of_birth, address = :address,
+                profile_photo = :profile_photo, updated_at = NOW()
             WHERE id = :id
         ");
 
         return $stmt->execute([
-            ':id'    => $id,
-            ':name'  => $data['name'],
-            ':email' => $data['email'],
+            ':id'              => $id,
+            ':name'            => $data['name'],
+            ':phone'           => $data['phone'] ?? null,
+            ':gender'          => $data['gender'] ?? null,
+            ':date_of_birth'   => $data['date_of_birth'] ?? null,
+            ':address'         => $data['address'] ?? null,
+            ':profile_photo'   => $data['profile_photo'] ?? null,
         ]);
     }
 
@@ -235,7 +309,7 @@ class User extends Model
     }
 
     /**
-     * Get paginated list of users with optional search.
+     * Get paginated list of users with optional search, excluding soft-deleted.
      *
      * @param int $page
      * @param int $perPage
@@ -247,9 +321,9 @@ class User extends Model
         $offset = ($page - 1) * $perPage;
         $params = [];
 
-        $where = '';
+        $where = 'WHERE u.deleted_at IS NULL';
         if (!empty($search)) {
-            $where = "WHERE u.name LIKE :search OR u.email LIKE :search";
+            $where .= " AND (u.name LIKE :search OR u.email LIKE :search OR u.username LIKE :search OR u.phone LIKE :search)";
             $params[':search'] = '%' . $search . '%';
         }
 
@@ -289,7 +363,7 @@ class User extends Model
     }
 
     /**
-     * Find a user by ID with full details including role.
+     * Find a user by ID with full details including role, excluding soft-deleted.
      *
      * @param int $id
      * @return array|null
@@ -321,7 +395,7 @@ class User extends Model
     }
 
     /**
-     * Update a user's role.
+     * Update a user's role, and refresh their permissions cache if needed.
      *
      * @param int $id
      * @param int $roleId
@@ -352,16 +426,67 @@ class User extends Model
     {
         $stmt = $this->db->prepare("
             UPDATE users
-            SET name = :name, email = :email, role_id = :role_id, status = :status, updated_at = NOW()
+            SET 
+                name = :name, 
+                email = :email, 
+                username = :username,
+                phone = :phone,
+                role_id = :role_id, 
+                status = :status,
+                gender = :gender,
+                date_of_birth = :date_of_birth,
+                address = :address,
+                notes = :notes,
+                updated_at = NOW()
             WHERE id = :id
         ");
 
         return $stmt->execute([
-            ':id'      => $id,
-            ':name'    => $data['name'],
-            ':email'   => $data['email'],
-            ':role_id' => $data['role_id'],
-            ':status'  => $data['status'],
+            ':id'              => $id,
+            ':name'            => $data['name'],
+            ':email'           => $data['email'],
+            ':username'        => $data['username'] ?? null,
+            ':phone'           => $data['phone'] ?? null,
+            ':role_id'         => $data['role_id'],
+            ':status'          => $data['status'],
+            ':gender'          => $data['gender'] ?? null,
+            ':date_of_birth'   => $data['date_of_birth'] ?? null,
+            ':address'         => $data['address'] ?? null,
+            ':notes'           => $data['notes'] ?? null,
         ]);
+    }
+
+    /**
+     * Soft delete a user.
+     *
+     * @param int $id
+     * @return bool
+     */
+    public function softDelete(int $id): bool
+    {
+        $stmt = $this->db->prepare("
+            UPDATE users
+            SET deleted_at = NOW(), updated_at = NOW()
+            WHERE id = :id
+        ");
+
+        return $stmt->execute([':id' => $id]);
+    }
+
+    /**
+     * Get user's current profile photo path.
+     *
+     * @param int $id
+     * @return string|null
+     */
+    public function getProfilePhoto(int $id): ?string
+    {
+        $stmt = $this->db->prepare("
+            SELECT profile_photo FROM users WHERE id = :id LIMIT 1
+        ");
+        $stmt->execute([':id' => $id]);
+        $photo = $stmt->fetchColumn();
+
+        return $photo ?: null;
     }
 }

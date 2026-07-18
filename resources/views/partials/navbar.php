@@ -5,6 +5,7 @@
 
 $name = $user['name'] ?? 'User';
 $role = $user['role_name'] ?? 'Reader';
+$profilePhoto = $user['profile_photo'] ?? null;
 ?>
 
 <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
@@ -19,8 +20,12 @@ $role = $user['role_name'] ?? 'Reader';
             <span class="badge bg-primary me-2"><?= e($role) ?></span>
 
             <div class="dropdown">
-                <button class="btn btn-light dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="bi bi-person-circle me-1"></i>
+                <button class="btn btn-light dropdown-toggle d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <?php if ($profilePhoto): ?>
+                        <img src="<?= e(upload_url($profilePhoto)) ?>" alt="Profile" class="rounded-circle me-2" style="width: 32px; height: 32px; object-fit: cover;">
+                    <?php else: ?>
+                        <i class="bi bi-person-circle me-2"></i>
+                    <?php endif; ?>
                     <?= e($name) ?>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
