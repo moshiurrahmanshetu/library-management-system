@@ -4,9 +4,6 @@
  */
 
 $title = 'Roles';
-$showSidebar = true;
-
-ob_start();
 ?>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -52,7 +49,7 @@ ob_start();
                                             <i class="bi bi-pencil"></i>
                                         </a>
                                     <?php endif; ?>
-                                    <?php if (can('roles.delete') && (int) $role['id'] !== 1): ?>
+                                    <?php if (can('roles.delete') && (int)$role['id'] !== 1): ?>
                                         <form action="<?= base_url('roles/delete/' . $role['id']) ?>" method="POST" class="d-inline delete-form">
                                             <?= csrf_field() ?>
                                             <button type="submit" class="btn btn-sm btn-outline-danger">
@@ -69,7 +66,3 @@ ob_start();
         </div>
     </div>
 </div>
-
-<?php
-$content = ob_get_clean();
-require ROOT_PATH . '/resources/views/layouts/main.php';

@@ -30,6 +30,23 @@
 
                 <main class="container-fluid py-4">
                     <?php $success = $successFlash ?? null; require ROOT_PATH . '/resources/views/partials/alert.php'; ?>
+                    
+                    <!-- Breadcrumbs -->
+                    <?php $breadcrumbs = get_breadcrumbs(); ?>
+                    <?php if (count($breadcrumbs) > 1): ?>
+                        <nav aria-label="breadcrumb" class="mb-4">
+                            <ol class="breadcrumb">
+                                <?php foreach ($breadcrumbs as $index => $crumb): ?>
+                                    <?php if ($index === count($breadcrumbs) - 1): ?>
+                                        <li class="breadcrumb-item active" aria-current="page"><?= e($crumb['label']) ?></li>
+                                    <?php else: ?>
+                                        <li class="breadcrumb-item"><a href="<?= e($crumb['url']) ?>"><?= e($crumb['label']) ?></a></li>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            </ol>
+                        </nav>
+                    <?php endif; ?>
+                    
                     <?= $content ?? '' ?>
                 </main>
 

@@ -4,7 +4,6 @@
  */
 
 $title = 'Edit User';
-$showSidebar = true;
 
 $oldData = flash('old') ?? [];
 $name = $oldData['name'] ?? $user['name'];
@@ -13,8 +12,6 @@ $roleId = $oldData['role_id'] ?? $user['role_id'];
 $status = $oldData['status'] ?? $user['status'];
 
 $canChangeRole = ($currentUserRoleId ?? 0) == 1;
-
-ob_start();
 ?>
 
 <div class="row justify-content-center">
@@ -41,13 +38,13 @@ ob_start();
                         <label for="role_id" class="form-label">Role</label>
                         <select class="form-select" id="role_id" name="role_id" <?= !$canChangeRole ? 'disabled' : '' ?>>
                             <?php foreach ($roles as $role): ?>
-                                <option value="<?= (int) $role['id'] ?>" <?= (int) $roleId === (int) $role['id'] ? 'selected' : '' ?>>
+                                <option value="<?= (int)$role['id'] ?>" <?= (int)$roleId === (int)$role['id'] ? 'selected' : '' ?>>
                                     <?= e($role['name']) ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
                         <?php if (!$canChangeRole): ?>
-                            <input type="hidden" name="role_id" value="<?= (int) $roleId ?>">
+                            <input type="hidden" name="role_id" value="<?= (int)$roleId ?>">
                             <div class="form-text text-muted">Only Super Admin can change roles.</div>
                         <?php endif; ?>
                     </div>
@@ -69,7 +66,3 @@ ob_start();
         </div>
     </div>
 </div>
-
-<?php
-$content = ob_get_clean();
-require ROOT_PATH . '/resources/views/layouts/main.php';

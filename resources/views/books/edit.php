@@ -4,7 +4,6 @@
  */
 
 $title = 'Edit Book';
-$showSidebar = true;
 
 $oldData = flash('old') ?? [];
 $titleValue = $oldData['title'] ?? $book['title'];
@@ -20,8 +19,6 @@ $publishYear = $oldData['publish_year'] ?? $book['publish_year'];
 $totalPages = $oldData['total_pages'] ?? $book['total_pages'];
 $description = $oldData['description'] ?? $book['description'];
 $status = $oldData['status'] ?? $book['status'];
-
-ob_start();
 ?>
 
 <div class="row justify-content-center">
@@ -156,7 +153,3 @@ ob_start();
         </div>
     </div>
 </div>
-
-<?php
-$content = ob_get_clean();
-require ROOT_PATH . '/resources/views/layouts/main.php';

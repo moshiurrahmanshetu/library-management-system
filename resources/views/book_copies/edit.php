@@ -4,7 +4,6 @@
  */
 
 $title = 'Edit Copy - ' . $book['title'];
-$showSidebar = true;
 
 $oldData = flash('old') ?? [];
 $accessionNumber = $oldData['accession_number'] ?? $copy['accession_number'];
@@ -14,8 +13,6 @@ $purchasePrice = $oldData['purchase_price'] ?? $copy['purchase_price'];
 $condition = $oldData['book_condition'] ?? $copy['book_condition'];
 $status = $oldData['status'] ?? $copy['status'];
 $notes = $oldData['notes'] ?? $copy['notes'];
-
-ob_start();
 ?>
 
 <div class="row justify-content-center">
@@ -86,7 +83,3 @@ ob_start();
         </div>
     </div>
 </div>
-
-<?php
-$content = ob_get_clean();
-require ROOT_PATH . '/resources/views/layouts/main.php';

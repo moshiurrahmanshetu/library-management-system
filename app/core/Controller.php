@@ -36,7 +36,22 @@ abstract class Controller
 
         extract($data, EXTR_SKIP);
 
+        // Check if this is an auth view (login, register, errors) or a regular view
+        $authViews = ['auth.login', 'auth.register', 'errors.403', 'errors.404'];
+        $isAuthView = in_array($view, $authViews);
+
+        // Default values for layout
+        $title = $data['title'] ?? null;
+        $showSidebar = !$isAuthView && $this->isAuthenticated();
+        $user = $this->user();
+
+        // Capture the view content
+        ob_start();
         require $viewPath;
+        $content = ob_get_clean();
+
+        // Render the layout
+        require ROOT_PATH . '/resources/views/layouts/main.php';
     }
 
     /**
@@ -150,14 +165,7 @@ abstract class Controller
     protected function render403(): void
     {
         http_response_code(403);
-
-        $viewPath = ROOT_PATH . '/resources/views/errors/403.php';
-        if (file_exists($viewPath)) {
-            require $viewPath;
-        } else {
-            echo '403 - Forbidden.';
-        }
-
+        $this->view('errors.403');
         exit;
     }
 

@@ -4,7 +4,6 @@
  */
 
 $title = 'Edit Publisher';
-$showSidebar = true;
 
 $oldData = flash('old') ?? [];
 $name = $oldData['name'] ?? $publisher['name'];
@@ -13,8 +12,6 @@ $email = $oldData['email'] ?? $publisher['email'];
 $website = $oldData['website'] ?? $publisher['website'];
 $address = $oldData['address'] ?? $publisher['address'];
 $status = $oldData['status'] ?? $publisher['status'];
-
-ob_start();
 ?>
 
 <div class="row justify-content-center">
@@ -24,7 +21,7 @@ ob_start();
                 <h5 class="mb-0"><i class="bi bi-building me-2 text-primary"></i>Edit Publisher</h5>
             </div>
             <div class="card-body p-4 p-md-5">
-                <form action="<?= base_url('publishers/update/' . $publisher['id']) ?>" method="POST" novalidate>
+                <form action="<?= base_url('publishers/update/' . $publisher['id']) ?>" method="POST" novalidate">
                     <?= csrf_field() ?>
 
                     <div class="mb-3">
@@ -70,7 +67,3 @@ ob_start();
         </div>
     </div>
 </div>
-
-<?php
-$content = ob_get_clean();
-require ROOT_PATH . '/resources/views/layouts/main.php';

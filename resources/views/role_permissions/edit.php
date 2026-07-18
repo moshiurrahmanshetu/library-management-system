@@ -4,9 +4,6 @@
  */
 
 $title = 'Assign Permissions';
-$showSidebar = true;
-
-ob_start();
 ?>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -23,10 +20,8 @@ ob_start();
             <?= csrf_field() ?>
 
             <?php if (empty($groupedPermissions)): ?>
-                <p class="text-muted">No permissions available.</p>
-            <?php else: ?>
                 <div class="row g-4">
-                    <?php foreach ($groupedPermissions as $module => $permissions): ?>
+                    <?php foreach ($groupedPermissions as $module => $perms): ?>
                         <div class="col-md-6 col-lg-4">
                             <div class="card h-100 border">
                                 <div class="card-header bg-light d-flex justify-content-between align-items-center">
@@ -37,12 +32,12 @@ ob_start();
                                     </div>
                                 </div>
                                 <div class="card-body">
-                                    <?php foreach ($permissions as $permission): ?>
-                                        <?php $isChecked = in_array((int) $permission['id'], $assignedPermissionIds, true); ?>
+                                    <?php foreach ($perms as $perm): ?>
+                                        <?php $isChecked = in_array((int)$perm['id'], $assignedPermissionIds, true); ?>
                                         <div class="form-check mb-2">
-                                            <input class="form-check-input permission-checkbox permission-<?= e($module) ?>" type="checkbox" name="permissions[]" value="<?= (int) $permission['id'] ?>" id="perm-<?= (int) $permission['id'] ?>" <?= $isChecked ? 'checked' : '' ?>>
-                                            <label class="form-check-label small" for="perm-<?= (int) $permission['id'] ?>">
-                                                <?= e($permission['name']) ?>
+                                            <input class="form-check-input permission-checkbox permission-<?= e($module) ?>" type="checkbox" name="permissions[]" value="<?= (int)$perm['id'] ?>" id="perm-<?= (int)$perm['id'] ?>" <?= $isChecked ? 'checked' : '' ?>>
+                                            <label class="form-check-label small" for="perm-<?= (int)$perm['id'] ?>">
+                                                <?= e($perm['name']) ?>
                                             </label>
                                         </div>
                                     <?php endforeach; ?>
@@ -51,6 +46,8 @@ ob_start();
                         </div>
                     <?php endforeach; ?>
                 </div>
+            <?php else: ?>
+                <p class="text-muted">No permissions available.</p>
             <?php endif; ?>
 
             <div class="d-flex justify-content-between align-items-center mt-4">
@@ -60,7 +57,3 @@ ob_start();
         </form>
     </div>
 </div>
-
-<?php
-$content = ob_get_clean();
-require ROOT_PATH . '/resources/views/layouts/main.php';

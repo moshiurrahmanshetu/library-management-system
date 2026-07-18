@@ -5,8 +5,6 @@
 
 $title = 'Login';
 $email = old('email');
-
-ob_start();
 ?>
 
 <div class="card shadow-sm" style="width: 100%; max-width: 420px;">
@@ -49,7 +47,3 @@ ob_start();
         </p>
     </div>
 </div>
-
-<?php
-$content = ob_get_clean();
-require ROOT_PATH . '/resources/views/layouts/main.php';

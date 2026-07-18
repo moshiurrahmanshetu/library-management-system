@@ -152,16 +152,32 @@ class Router
      */
     private function compileRoute(string $uri): string
     {
-        $escaped = preg_quote($uri, '#');
-        $pattern = preg_replace_callback(
+        // First, extract all parameter placeholders so we can keep track of them
+        $paramNames = [];
+        $tempUri = preg_replace_callback(
             '#\\{([a-zA-Z_][a-zA-Z0-9_]*)\\}#',
-            function (array $matches): string {
-                $name = $matches[1];
-                $segmentPattern = $name === 'path' ? '.+' : '[^/]+';
-                return '(?P<' . $name . '>' . $segmentPattern . ')';
+            function (array $matches) use (&$paramNames): string {
+                $paramNames[] = $matches[1];
+                // Use a unique placeholder that won't be escaped by preg_quote
+                return '__PARAM_' . $matches[1] . '__';
             },
-            $escaped
+            $uri
         );
+
+        // Now escape the URI (which has our unique placeholders instead of {param})
+        $escaped = preg_quote($tempUri, '#');
+
+        // Now replace our unique placeholders with the actual regex patterns
+        $pattern = $escaped;
+        foreach ($paramNames as $name) {
+            $placeholder = preg_quote('__PARAM_' . $name . '__', '#');
+            $segmentPattern = $name === 'path' ? '.+' : '[^/]+';
+            $pattern = preg_replace(
+                '#' . $placeholder . '#',
+                '(?P<' . $name . '>' . $segmentPattern . ')',
+                $pattern
+            );
+        }
 
         return '#^' . $pattern . '$#';
     }
@@ -191,10 +207,10 @@ class Router
             return null;
         }
 
+        // Return params in the order they appeared in the route definition
         $params = [];
-
         foreach ($route['params'] as $name) {
-            $params[$name] = $matches[$name] ?? null;
+            $params[] = $matches[$name] ?? null;
         }
 
         return $params;
@@ -231,10 +247,26 @@ class Router
         http_response_code(404);
 
         $viewPath = ROOT_PATH . '/resources/views/errors/404.php';
-        if (file_exists($viewPath)) {
-            require $viewPath;
-        } else {
+
+        if (!file_exists($viewPath)) {
             echo '404 - Page not found.';
+            return;
         }
+
+        // Replicate Controller::view() logic for 404 page
+        $view = 'errors.404';
+        $authViews = ['auth.login', 'auth.register', 'errors.403', 'errors.404'];
+        $isAuthView = in_array($view, $authViews);
+        $showSidebar = false;
+        $user = null;
+        $title = 'Page Not Found';
+
+        // Capture view content
+        ob_start();
+        require $viewPath;
+        $content = ob_get_clean();
+
+        // Render layout
+        require ROOT_PATH . '/resources/views/layouts/main.php';
     }
 }

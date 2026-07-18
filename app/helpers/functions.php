@@ -344,3 +344,68 @@ if (!function_exists('upload_url')) {
         return base_url('uploads/' . ltrim($relativePath, '/'));
     }
 }
+
+if (!function_exists('get_breadcrumbs')) {
+    /**
+     * Generate automatic breadcrumbs based on current URI.
+     *
+     * @return array
+     */
+    function get_breadcrumbs(): array
+    {
+        $uri = trim(parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH), '/');
+        $scriptDir = trim(dirname($_SERVER['SCRIPT_NAME']), '/');
+        if ($scriptDir !== '' && str_starts_with($uri, $scriptDir)) {
+            $uri = substr($uri, strlen($scriptDir));
+            $uri = ltrim($uri, '/');
+        }
+
+        $crumbs = [
+            ['label' => 'Dashboard', 'url' => base_url('dashboard')]
+        ];
+
+        if (empty($uri) || $uri === 'dashboard') {
+            return $crumbs;
+        }
+
+        $segments = explode('/', $uri);
+        $currentPath = '';
+        
+        // Define custom labels for segments
+        $labelMap = [
+            'users' => 'Users',
+            'roles' => 'Roles',
+            'permissions' => 'Permissions',
+            'role-permissions' => 'Role Permissions',
+            'books' => 'Books',
+            'categories' => 'Categories',
+            'authors' => 'Authors',
+            'publishers' => 'Publishers',
+            'shelves' => 'Shelves',
+            'profile' => 'Profile',
+            'password' => 'Password',
+            'copies' => 'Book Copies',
+            'create' => 'Create',
+            'edit' => 'Edit',
+            'show' => 'Details',
+            'change' => 'Change'
+        ];
+
+        foreach ($segments as $index => $segment) {
+            $currentPath .= '/' . $segment;
+            $label = $labelMap[$segment] ?? ucfirst(str_replace('-', ' ', $segment));
+            
+            // For ID segments, we don't add them as breadcrumbs
+            if (is_numeric($segment)) {
+                continue;
+            }
+
+            $crumbs[] = [
+                'label' => $label,
+                'url' => $index === count($segments) - 1 ? null : base_url(ltrim($currentPath, '/'))
+            ];
+        }
+
+        return $crumbs;
+    }
+}

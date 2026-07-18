@@ -4,7 +4,6 @@
  */
 
 $title = 'Edit Shelf';
-$showSidebar = true;
 
 $oldData = flash('old') ?? [];
 $shelfCode = $oldData['shelf_code'] ?? $shelf['shelf_code'];
@@ -12,8 +11,6 @@ $shelfName = $oldData['shelf_name'] ?? $shelf['shelf_name'];
 $floor = $oldData['floor'] ?? $shelf['floor'];
 $description = $oldData['description'] ?? $shelf['description'];
 $status = $oldData['status'] ?? $shelf['status'];
-
-ob_start();
 ?>
 
 <div class="row justify-content-center">
@@ -23,7 +20,7 @@ ob_start();
                 <h5 class="mb-0"><i class="bi bi-columns-gap me-2 text-primary"></i>Edit Shelf</h5>
             </div>
             <div class="card-body p-4 p-md-5">
-                <form action="<?= base_url('shelves/update/' . $shelf['id']) ?>" method="POST" novalidate>
+                <form action="<?= base_url('shelves/update/' . $shelf['id']) ?>" method="POST" novalidate">
                     <?= csrf_field() ?>
 
                     <div class="row">
@@ -64,7 +61,3 @@ ob_start();
         </div>
     </div>
 </div>
-
-<?php
-$content = ob_get_clean();
-require ROOT_PATH . '/resources/views/layouts/main.php';

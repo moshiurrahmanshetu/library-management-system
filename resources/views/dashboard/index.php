@@ -4,9 +4,6 @@
  */
 
 $title = 'Dashboard';
-$showSidebar = true;
-
-ob_start();
 ?>
 
 <div class="row g-4">
@@ -118,7 +115,3 @@ ob_start();
         </div>
     <?php endif; ?>
 </div>
-
-<?php
-$content = ob_get_clean();
-require ROOT_PATH . '/resources/views/layouts/main.php';

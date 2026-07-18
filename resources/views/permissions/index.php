@@ -4,9 +4,6 @@
  */
 
 $title = 'Permissions';
-$showSidebar = true;
-
-ob_start();
 ?>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -64,7 +61,3 @@ ob_start();
         </div>
     </div>
 </div>
-
-<?php
-$content = ob_get_clean();
-require ROOT_PATH . '/resources/views/layouts/main.php';

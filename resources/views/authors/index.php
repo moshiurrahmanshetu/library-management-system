@@ -4,9 +4,6 @@
  */
 
 $title = 'Authors';
-$showSidebar = true;
-
-ob_start();
 ?>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -24,9 +21,9 @@ ob_start();
             <div class="col-md-6">
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-search"></i></span>
-                    <input type="text" name="search" class="form-control" value="<?= e($search) ?>" placeholder="Search by name or biography">
+                    <input type="text" name="search" class="form-control" value="<?= e($search ?? '') ?>" placeholder="Search by name or biography">
                     <button type="submit" class="btn btn-outline-secondary">Search</button>
-                    <?php if ($search): ?>
+                    <?php if (($search ?? '') !== ''): ?>
                         <a href="<?= base_url('authors') ?>" class="btn btn-outline-secondary">Clear</a>
                     <?php endif; ?>
                 </div>
@@ -88,30 +85,26 @@ ob_start();
     </div>
 </div>
 
-<?php if ($lastPage > 1): ?>
+<?php if (($lastPage ?? 1) > 1): ?>
     <nav aria-label="Authors pagination" class="mt-4">
         <ul class="pagination justify-content-center">
-            <?php if ($page > 1): ?>
+            <?php if (($page ?? 1) > 1): ?>
                 <li class="page-item">
-                    <a class="page-link" href="<?= base_url('authors?page=' . ($page - 1) . ($search ? '&search=' . urlencode($search) : '')) ?>">Previous</a>
+                    <a class="page-link" href="<?= base_url('authors?page=' . (($page ?? 1) - 1) . (($search ?? '') ? '&search=' . urlencode($search) : '')) ?>">Previous</a>
                 </li>
             <?php endif; ?>
 
-            <?php for ($i = 1; $i <= $lastPage; $i++): ?>
-                <li class="page-item <?= $i === $page ? 'active' : '' ?>">
-                    <a class="page-link" href="<?= base_url('authors?page=' . $i . ($search ? '&search=' . urlencode($search) : '')) ?>"><?= $i ?></a>
+            <?php for ($i = 1; $i <= ($lastPage ?? 1); $i++): ?>
+                <li class="page-item <?= $i === ($page ?? 1) ? 'active' : '' ?>">
+                    <a class="page-link" href="<?= base_url('authors?page=' . $i . (($search ?? '') ? '&search=' . urlencode($search) : '')) ?>"><?= $i ?></a>
                 </li>
             <?php endfor; ?>
 
-            <?php if ($page < $lastPage): ?>
+            <?php if (($page ?? 1) < ($lastPage ?? 1)): ?>
                 <li class="page-item">
-                    <a class="page-link" href="<?= base_url('authors?page=' . ($page + 1) . ($search ? '&search=' . urlencode($search) : '')) ?>">Next</a>
+                    <a class="page-link" href="<?= base_url('authors?page=' . (($page ?? 1) + 1) . (($search ?? '') ? '&search=' . urlencode($search) : '')) ?>">Next</a>
                 </li>
             <?php endif; ?>
         </ul>
     </nav>
 <?php endif; ?>
-
-<?php
-$content = ob_get_clean();
-require ROOT_PATH . '/resources/views/layouts/main.php';

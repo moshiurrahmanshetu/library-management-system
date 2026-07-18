@@ -4,7 +4,6 @@
  */
 
 $title = 'Books';
-$showSidebar = true;
 
 $filterSearch = $filters['search'] ?? '';
 $filterCategoryId = $filters['category_id'] ?? null;
@@ -32,8 +31,6 @@ if ($filterShelfId) {
 if ($filterStatus) {
     $queryParams['status'] = $filterStatus;
 }
-
-ob_start();
 ?>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -58,8 +55,8 @@ ob_start();
                 <div class="col-md-2">
                     <select name="category_id" class="form-select">
                         <option value="">All Categories</option>
-                        <?php foreach ($categories as $category): ?>
-                            <option value="<?= $category['id'] ?>" <?= (int) $filterCategoryId === (int) $category['id'] ? 'selected' : '' ?>>
+                        <?php foreach ($categories ?? [] as $category): ?>
+                            <option value="<?= $category['id'] ?>" <?= (int)$filterCategoryId === (int)$category['id'] ? 'selected' : '' ?>>
                                 <?= e($category['name']) ?>
                             </option>
                         <?php endforeach; ?>
@@ -68,8 +65,8 @@ ob_start();
                 <div class="col-md-2">
                     <select name="author_id" class="form-select">
                         <option value="">All Authors</option>
-                        <?php foreach ($authors as $author): ?>
-                            <option value="<?= $author['id'] ?>" <?= (int) $filterAuthorId === (int) $author['id'] ? 'selected' : '' ?>>
+                        <?php foreach ($authors ?? [] as $author): ?>
+                            <option value="<?= $author['id'] ?>" <?= (int)$filterAuthorId === (int)$author['id'] ? 'selected' : '' ?>>
                                 <?= e($author['full_name']) ?>
                             </option>
                         <?php endforeach; ?>
@@ -78,8 +75,8 @@ ob_start();
                 <div class="col-md-2">
                     <select name="publisher_id" class="form-select">
                         <option value="">All Publishers</option>
-                        <?php foreach ($publishers as $publisher): ?>
-                            <option value="<?= $publisher['id'] ?>" <?= (int) $filterPublisherId === (int) $publisher['id'] ? 'selected' : '' ?>>
+                        <?php foreach ($publishers ?? [] as $publisher): ?>
+                            <option value="<?= $publisher['id'] ?>" <?= (int)$filterPublisherId === (int)$publisher['id'] ? 'selected' : '' ?>>
                                 <?= e($publisher['name']) ?>
                             </option>
                         <?php endforeach; ?>
@@ -177,30 +174,26 @@ ob_start();
     </div>
 </div>
 
-<?php if ($lastPage > 1): ?>
+<?php if (($lastPage ?? 1) > 1): ?>
     <nav aria-label="Books pagination" class="mt-4">
         <ul class="pagination justify-content-center">
-            <?php if ($page > 1): ?>
+            <?php if (($page ?? 1) > 1): ?>
                 <li class="page-item">
-                    <a class="page-link" href="<?= base_url('books?' . http_build_query(array_merge($queryParams, ['page' => $page - 1]))) ?>">Previous</a>
+                    <a class="page-link" href="<?= base_url('books?' . http_build_query(array_merge($queryParams, ['page' => ($page ?? 1) - 1]))) ?>">Previous</a>
                 </li>
             <?php endif; ?>
 
-            <?php for ($i = 1; $i <= $lastPage; $i++): ?>
-                <li class="page-item <?= $i === $page ? 'active' : '' ?>">
+            <?php for ($i = 1; $i <= ($lastPage ?? 1); $i++): ?>
+                <li class="page-item <?= $i === ($page ?? 1) ? 'active' : '' ?>">
                     <a class="page-link" href="<?= base_url('books?' . http_build_query(array_merge($queryParams, ['page' => $i]))) ?>"><?= $i ?></a>
                 </li>
             <?php endfor; ?>
 
-            <?php if ($page < $lastPage): ?>
+            <?php if (($page ?? 1) < ($lastPage ?? 1)): ?>
                 <li class="page-item">
-                    <a class="page-link" href="<?= base_url('books?' . http_build_query(array_merge($queryParams, ['page' => $page + 1]))) ?>">Next</a>
+                    <a class="page-link" href="<?= base_url('books?' . http_build_query(array_merge($queryParams, ['page' => ($page ?? 1) + 1]))) ?>">Next</a>
                 </li>
             <?php endif; ?>
         </ul>
     </nav>
 <?php endif; ?>
-
-<?php
-$content = ob_get_clean();
-require ROOT_PATH . '/resources/views/layouts/main.php';

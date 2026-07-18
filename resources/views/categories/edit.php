@@ -4,14 +4,11 @@
  */
 
 $title = 'Edit Category';
-$showSidebar = true;
 
 $oldData = flash('old') ?? [];
 $name = $oldData['name'] ?? $category['name'];
 $description = $oldData['description'] ?? $category['description'];
 $status = $oldData['status'] ?? $category['status'];
-
-ob_start();
 ?>
 
 <div class="row justify-content-center">
@@ -51,7 +48,3 @@ ob_start();
         </div>
     </div>
 </div>
-
-<?php
-$content = ob_get_clean();
-require ROOT_PATH . '/resources/views/layouts/main.php';

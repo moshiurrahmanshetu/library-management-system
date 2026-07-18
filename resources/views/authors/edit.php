@@ -4,14 +4,11 @@
  */
 
 $title = 'Edit Author';
-$showSidebar = true;
 
 $oldData = flash('old') ?? [];
 $fullName = $oldData['full_name'] ?? $author['full_name'];
 $biography = $oldData['biography'] ?? $author['biography'];
 $status = $oldData['status'] ?? $author['status'];
-
-ob_start();
 ?>
 
 <div class="row justify-content-center">
@@ -21,7 +18,7 @@ ob_start();
                 <h5 class="mb-0"><i class="bi bi-person-vcard me-2 text-primary"></i>Edit Author</h5>
             </div>
             <div class="card-body p-4 p-md-5">
-                <form action="<?= base_url('authors/update/' . $author['id']) ?>" method="POST" novalidate>
+                <form action="<?= base_url('authors/update/' . $author['id']) ?>" method="POST" novalidate">
                     <?= csrf_field() ?>
 
                     <div class="mb-3">
@@ -51,7 +48,3 @@ ob_start();
         </div>
     </div>
 </div>
-
-<?php
-$content = ob_get_clean();
-require ROOT_PATH . '/resources/views/layouts/main.php';

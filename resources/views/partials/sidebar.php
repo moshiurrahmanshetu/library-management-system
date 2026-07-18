@@ -87,9 +87,6 @@ $menuItems[] = ['uri' => 'password/change', 'label' => 'Change Password', 'icon'
                         <a href="<?= base_url('books') ?>" class="nav-link rounded py-1 <?= $currentUri === 'books' || str_starts_with($currentUri, 'books/') ? 'active bg-primary' : 'text-white' ?>">
                             Books
                         </a>
-                        <a href="<?= base_url('books') ?>" class="nav-link rounded py-1 <?= $currentUri === 'book-copies' || str_starts_with($currentUri, 'books/') ? 'active bg-primary' : 'text-white' ?>">
-                            Book Copies
-                        </a>
                     </div>
                 </div>
             </div>

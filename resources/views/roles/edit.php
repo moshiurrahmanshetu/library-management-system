@@ -4,13 +4,10 @@
  */
 
 $title = 'Edit Role';
-$showSidebar = true;
 
 $oldData = flash('old') ?? [];
 $name = $oldData['name'] ?? $role['name'];
 $description = $oldData['description'] ?? $role['description'];
-
-ob_start();
 ?>
 
 <div class="row justify-content-center">
@@ -42,7 +39,3 @@ ob_start();
         </div>
     </div>
 </div>
-
-<?php
-$content = ob_get_clean();
-require ROOT_PATH . '/resources/views/layouts/main.php';

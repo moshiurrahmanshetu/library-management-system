@@ -4,13 +4,10 @@
  */
 
 $title = 'Add Permission';
-$showSidebar = true;
 
 $oldData = flash('old') ?? [];
 $name = $oldData['name'] ?? '';
 $description = $oldData['description'] ?? '';
-
-ob_start();
 ?>
 
 <div class="row justify-content-center">
@@ -43,7 +40,3 @@ ob_start();
         </div>
     </div>
 </div>
-
-<?php
-$content = ob_get_clean();
-require ROOT_PATH . '/resources/views/layouts/main.php';

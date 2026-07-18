@@ -4,7 +4,6 @@
  */
 
 $title = 'Add Book';
-$showSidebar = true;
 
 $oldData = flash('old') ?? [];
 $titleValue = $oldData['title'] ?? '';
@@ -20,8 +19,6 @@ $publishYear = $oldData['publish_year'] ?? '';
 $totalPages = $oldData['total_pages'] ?? '';
 $description = $oldData['description'] ?? '';
 $status = $oldData['status'] ?? 'active';
-
-ob_start();
 ?>
 
 <div class="row justify-content-center">
@@ -53,8 +50,8 @@ ob_start();
                             <label for="category_id" class="form-label">Category <span class="text-danger">*</span></label>
                             <select class="form-select" id="category_id" name="category_id" required>
                                 <option value="">Select Category</option>
-                                <?php foreach ($categories as $category): ?>
-                                    <option value="<?= $category['id'] ?>" <?= (int) $categoryId === (int) $category['id'] ? 'selected' : '' ?>>
+                                <?php foreach ($categories ?? [] as $category): ?>
+                                    <option value="<?= $category['id'] ?>" <?= (int)$categoryId === (int)$category['id'] ? 'selected' : '' ?>>
                                         <?= e($category['name']) ?>
                                     </option>
                                 <?php endforeach; ?>
@@ -64,8 +61,8 @@ ob_start();
                             <label for="author_id" class="form-label">Author <span class="text-danger">*</span></label>
                             <select class="form-select" id="author_id" name="author_id" required>
                                 <option value="">Select Author</option>
-                                <?php foreach ($authors as $author): ?>
-                                    <option value="<?= $author['id'] ?>" <?= (int) $authorId === (int) $author['id'] ? 'selected' : '' ?>>
+                                <?php foreach ($authors ?? [] as $author): ?>
+                                    <option value="<?= $author['id'] ?>" <?= (int)$authorId === (int)$author['id'] ? 'selected' : '' ?>>
                                         <?= e($author['full_name']) ?>
                                     </option>
                                 <?php endforeach; ?>
@@ -78,8 +75,8 @@ ob_start();
                             <label for="publisher_id" class="form-label">Publisher</label>
                             <select class="form-select" id="publisher_id" name="publisher_id">
                                 <option value="">Select Publisher</option>
-                                <?php foreach ($publishers as $publisher): ?>
-                                    <option value="<?= $publisher['id'] ?>" <?= (int) $publisherId === (int) $publisher['id'] ? 'selected' : '' ?>>
+                                <?php foreach ($publishers ?? [] as $publisher): ?>
+                                    <option value="<?= $publisher['id'] ?>" <?= (int)$publisherId === (int)$publisher['id'] ? 'selected' : '' ?>>
                                         <?= e($publisher['name']) ?>
                                     </option>
                                 <?php endforeach; ?>
@@ -89,8 +86,8 @@ ob_start();
                             <label for="shelf_id" class="form-label">Shelf</label>
                             <select class="form-select" id="shelf_id" name="shelf_id">
                                 <option value="">Select Shelf</option>
-                                <?php foreach ($shelves as $shelf): ?>
-                                    <option value="<?= $shelf['id'] ?>" <?= (int) $shelfId === (int) $shelf['id'] ? 'selected' : '' ?>>
+                                <?php foreach ($shelves ?? [] as $shelf): ?>
+                                    <option value="<?= $shelf['id'] ?>" <?= (int)$shelfId === (int)$shelf['id'] ? 'selected' : '' ?>>
                                         <?= e($shelf['shelf_code'] . ' - ' . $shelf['shelf_name']) ?>
                                     </option>
                                 <?php endforeach; ?>
@@ -147,7 +144,3 @@ ob_start();
         </div>
     </div>
 </div>
-
-<?php
-$content = ob_get_clean();
-require ROOT_PATH . '/resources/views/layouts/main.php';

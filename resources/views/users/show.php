@@ -4,9 +4,6 @@
  */
 
 $title = 'User Details';
-$showSidebar = true;
-
-ob_start();
 ?>
 
 <div class="row justify-content-center">
@@ -61,7 +58,3 @@ ob_start();
         </div>
     </div>
 </div>
-
-<?php
-$content = ob_get_clean();
-require ROOT_PATH . '/resources/views/layouts/main.php';
