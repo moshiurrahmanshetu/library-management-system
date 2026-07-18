@@ -7,7 +7,7 @@
 
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /
+    RewriteBase /library-management-system/public/
 
     # Redirect trailing slashes if not a folder.
     RewriteCond %{REQUEST_FILENAME} !-d

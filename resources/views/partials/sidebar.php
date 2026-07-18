@@ -29,6 +29,15 @@ if (can('role_permissions.view')) {
     $menuItems[] = ['uri' => 'roles', 'label' => 'Role Permissions', 'icon' => 'bi-shield-check', 'permission' => 'role_permissions.view'];
 }
 
+$bookModuleUris = ['categories', 'authors', 'publishers', 'shelves', 'books'];
+$isBookModuleActive = false;
+foreach ($bookModuleUris as $bookUri) {
+    if ($currentUri === $bookUri || str_starts_with($currentUri, $bookUri . '/')) {
+        $isBookModuleActive = true;
+        break;
+    }
+}
+
 // Always-visible account menu items.
 $menuItems[] = ['uri' => 'profile', 'label' => 'Profile', 'icon' => 'bi-person', 'permission' => null];
 $menuItems[] = ['uri' => 'password/change', 'label' => 'Change Password', 'icon' => 'bi-shield-lock', 'permission' => null];
@@ -53,6 +62,38 @@ $menuItems[] = ['uri' => 'password/change', 'label' => 'Change Password', 'icon'
                 <?= e($item['label']) ?>
             </a>
         <?php endforeach; ?>
+
+        <?php if (can('books.view')): ?>
+            <div class="nav-item mb-2">
+                <a class="nav-link rounded d-flex justify-content-between align-items-center <?= $isBookModuleActive ? 'active bg-primary' : 'text-white' ?>"
+                   href="#" data-bs-toggle="collapse" data-bs-target="#booksMenu" aria-expanded="<?= $isBookModuleActive ? 'true' : 'false' ?>">
+                    <span><i class="bi bi-book me-2"></i>Books</span>
+                    <i class="bi bi-chevron-down small"></i>
+                </a>
+                <div class="collapse <?= $isBookModuleActive ? 'show' : '' ?>" id="booksMenu">
+                    <div class="ps-4 pt-1">
+                        <a href="<?= base_url('categories') ?>" class="nav-link rounded py-1 <?= $currentUri === 'categories' || str_starts_with($currentUri, 'categories/') ? 'active bg-primary' : 'text-white' ?>">
+                            Categories
+                        </a>
+                        <a href="<?= base_url('authors') ?>" class="nav-link rounded py-1 <?= $currentUri === 'authors' || str_starts_with($currentUri, 'authors/') ? 'active bg-primary' : 'text-white' ?>">
+                            Authors
+                        </a>
+                        <a href="<?= base_url('publishers') ?>" class="nav-link rounded py-1 <?= $currentUri === 'publishers' || str_starts_with($currentUri, 'publishers/') ? 'active bg-primary' : 'text-white' ?>">
+                            Publishers
+                        </a>
+                        <a href="<?= base_url('shelves') ?>" class="nav-link rounded py-1 <?= $currentUri === 'shelves' || str_starts_with($currentUri, 'shelves/') ? 'active bg-primary' : 'text-white' ?>">
+                            Shelves
+                        </a>
+                        <a href="<?= base_url('books') ?>" class="nav-link rounded py-1 <?= $currentUri === 'books' || str_starts_with($currentUri, 'books/') ? 'active bg-primary' : 'text-white' ?>">
+                            Books
+                        </a>
+                        <a href="<?= base_url('books') ?>" class="nav-link rounded py-1 <?= $currentUri === 'book-copies' || str_starts_with($currentUri, 'books/') ? 'active bg-primary' : 'text-white' ?>">
+                            Book Copies
+                        </a>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
 
         <hr class="text-secondary my-3">
 
