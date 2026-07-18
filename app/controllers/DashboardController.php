@@ -28,6 +28,10 @@ class DashboardController extends Controller
         $this->view('dashboard.index', [
             'user'              => $user,
             'profileCompletion' => $profileCompletion,
+            'canViewUsers'      => can('users.view'),
+            'canViewBooks'      => can('books.view'),
+            'canViewReports'    => can('reports.view'),
+            'canViewSettings'   => can('settings.view'),
         ]);
     }
 

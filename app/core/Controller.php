@@ -130,6 +130,38 @@ abstract class Controller
     }
 
     /**
+     * Require the authenticated user to have a specific permission.
+     *
+     * @param string $permission
+     * @return void
+     */
+    protected function authorize(string $permission): void
+    {
+        if (!can($permission)) {
+            $this->render403();
+        }
+    }
+
+    /**
+     * Render the 403 forbidden page and stop execution.
+     *
+     * @return void
+     */
+    protected function render403(): void
+    {
+        http_response_code(403);
+
+        $viewPath = ROOT_PATH . '/resources/views/errors/403.php';
+        if (file_exists($viewPath)) {
+            require $viewPath;
+        } else {
+            echo '403 - Forbidden.';
+        }
+
+        exit;
+    }
+
+    /**
      * Validate input data against a set of rules.
      *
      * @param array $data

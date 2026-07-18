@@ -5,7 +5,9 @@
  * Renders success, error and validation messages stored in the session.
  */
 
-$success = flash('success');
+if (!isset($success)) {
+    $success = flash('success');
+}
 $error = flash('error');
 $errors = flash('errors') ?? [];
 ?>

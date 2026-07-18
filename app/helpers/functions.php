@@ -1,6 +1,7 @@
 <?php
 
 use App\Core\Session;
+use App\Models\Permission;
 
 /**
  * Global helper functions.
@@ -182,5 +183,58 @@ if (!function_exists('format_datetime')) {
         $date = DateTime::createFromFormat('Y-m-d H:i:s', $datetime);
 
         return $date ? $date->format($format) : $datetime;
+    }
+}
+
+if (!function_exists('can')) {
+    /**
+     * Check whether the authenticated user has a given permission.
+     *
+     * Looks at the session permission cache first, then falls back to
+     * the database. Guests never have permissions.
+     *
+     * @param string $permission
+     * @return bool
+     */
+    function can(string $permission): bool
+    {
+        $userId = Session::get('user_id');
+
+        if (!$userId) {
+            return false;
+        }
+
+        $cached = Session::get('user_permissions');
+
+        if (is_array($cached)) {
+            return in_array($permission, $cached, true);
+        }
+
+        $permissionModel = new Permission();
+        $permissions = $permissionModel->getByUser((int) $userId);
+
+        Session::set('user_permissions', $permissions);
+
+        return in_array($permission, $permissions, true);
+    }
+}
+
+if (!function_exists('refresh_permissions')) {
+    /**
+     * Clear and reload the cached permissions for the current user.
+     *
+     * @return void
+     */
+    function refresh_permissions(): void
+    {
+        $userId = Session::get('user_id');
+
+        if (!$userId) {
+            Session::remove('user_permissions');
+            return;
+        }
+
+        $permissionModel = new Permission();
+        Session::set('user_permissions', $permissionModel->getByUser((int) $userId));
     }
 }

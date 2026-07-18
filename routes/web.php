@@ -3,6 +3,7 @@
 use App\Core\Router;
 use App\Middleware\AuthMiddleware;
 use App\Middleware\CsrfMiddleware;
+use App\Middleware\PermissionMiddleware;
 
 /**
  * Web routes.
@@ -18,6 +19,7 @@ if (!defined('ROOT_PATH')) {
 $router = new Router();
 $authMiddleware = new AuthMiddleware();
 $csrfMiddleware = new CsrfMiddleware();
+$permissionMiddleware = new PermissionMiddleware();
 
 // ------------------------------------------------------------------
 // Guest routes (registration and login)
@@ -84,6 +86,169 @@ $router->post('logout', function () use ($authMiddleware, $csrfMiddleware) {
     $authMiddleware->handle();
     $csrfMiddleware->handle();
     (new \App\Controllers\AuthController())->logout();
+});
+
+// ------------------------------------------------------------------
+// Role management routes
+// ------------------------------------------------------------------
+
+$router->get('roles', function () use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('roles.view');
+    (new \App\Controllers\RoleController())->index();
+});
+
+$router->get('roles/create', function () use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('roles.create');
+    (new \App\Controllers\RoleController())->create();
+});
+
+$router->post('roles/store', function () use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('roles.create');
+    (new \App\Controllers\RoleController())->store();
+});
+
+$router->get('roles/edit/{id}', function (int $id) use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('roles.edit');
+    (new \App\Controllers\RoleController())->edit($id);
+});
+
+$router->post('roles/update/{id}', function (int $id) use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('roles.edit');
+    (new \App\Controllers\RoleController())->update($id);
+});
+
+$router->post('roles/delete/{id}', function (int $id) use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('roles.delete');
+    (new \App\Controllers\RoleController())->destroy($id);
+});
+
+// ------------------------------------------------------------------
+// Permission management routes
+// ------------------------------------------------------------------
+
+$router->get('permissions', function () use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('permissions.view');
+    (new \App\Controllers\PermissionController())->index();
+});
+
+$router->get('permissions/create', function () use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('permissions.create');
+    (new \App\Controllers\PermissionController())->create();
+});
+
+$router->post('permissions/store', function () use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('permissions.create');
+    (new \App\Controllers\PermissionController())->store();
+});
+
+$router->get('permissions/edit/{id}', function (int $id) use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('permissions.edit');
+    (new \App\Controllers\PermissionController())->edit($id);
+});
+
+$router->post('permissions/update/{id}', function (int $id) use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('permissions.edit');
+    (new \App\Controllers\PermissionController())->update($id);
+});
+
+$router->post('permissions/delete/{id}', function (int $id) use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('permissions.delete');
+    (new \App\Controllers\PermissionController())->destroy($id);
+});
+
+// ------------------------------------------------------------------
+// Role permission assignment routes
+// ------------------------------------------------------------------
+
+$router->get('role-permissions/edit/{id}', function (int $id) use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('role_permissions.view');
+    (new \App\Controllers\RolePermissionController())->edit($id);
+});
+
+$router->post('role-permissions/update/{id}', function (int $id) use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('role_permissions.edit');
+    (new \App\Controllers\RolePermissionController())->update($id);
+});
+
+// ------------------------------------------------------------------
+// User management routes
+// ------------------------------------------------------------------
+
+$router->get('users', function () use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('users.view');
+    (new \App\Controllers\UserController())->index();
+});
+
+$router->get('users/show/{id}', function (int $id) use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('users.view');
+    (new \App\Controllers\UserController())->show($id);
+});
+
+$router->get('users/edit/{id}', function (int $id) use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('users.edit');
+    (new \App\Controllers\UserController())->edit($id);
+});
+
+$router->post('users/update/{id}', function (int $id) use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('users.edit');
+    (new \App\Controllers\UserController())->update($id);
+});
+
+$router->post('users/activate/{id}', function (int $id) use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('users.edit');
+    (new \App\Controllers\UserController())->activate($id);
+});
+
+$router->post('users/deactivate/{id}', function (int $id) use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('users.edit');
+    (new \App\Controllers\UserController())->deactivate($id);
+});
+
+$router->post('users/update-role/{id}', function (int $id) use ($authMiddleware, $csrfMiddleware, $permissionMiddleware) {
+    $authMiddleware->handle();
+    $csrfMiddleware->handle();
+    $permissionMiddleware->handle('users.edit');
+    (new \App\Controllers\UserController())->updateRole($id);
 });
 
 // ------------------------------------------------------------------

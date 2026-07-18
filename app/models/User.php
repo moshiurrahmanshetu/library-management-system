@@ -233,4 +233,135 @@ class User extends Model
 
         return $stmt->execute([':id' => $id]);
     }
+
+    /**
+     * Get paginated list of users with optional search.
+     *
+     * @param int $page
+     * @param int $perPage
+     * @param string|null $search
+     * @return array
+     */
+    public function paginate(int $page = 1, int $perPage = 10, ?string $search = null): array
+    {
+        $offset = ($page - 1) * $perPage;
+        $params = [];
+
+        $where = '';
+        if (!empty($search)) {
+            $where = "WHERE u.name LIKE :search OR u.email LIKE :search";
+            $params[':search'] = '%' . $search . '%';
+        }
+
+        $countSql = "SELECT COUNT(*) FROM users u {$where}";
+        $countStmt = $this->db->prepare($countSql);
+        $countStmt->execute($params);
+        $total = (int) $countStmt->fetchColumn();
+
+        $sql = "
+            SELECT u.*, r.name AS role_name
+            FROM users u
+            JOIN roles r ON r.id = u.role_id
+            {$where}
+            ORDER BY u.created_at DESC
+            LIMIT :limit OFFSET :offset
+        ";
+
+        $stmt = $this->db->prepare($sql);
+
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
+        }
+
+        $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return [
+            'data'       => $users,
+            'total'      => $total,
+            'page'       => $page,
+            'per_page'   => $perPage,
+            'last_page'  => (int) ceil($total / $perPage),
+        ];
+    }
+
+    /**
+     * Find a user by ID with full details including role.
+     *
+     * @param int $id
+     * @return array|null
+     */
+    public function findDetailed(int $id): ?array
+    {
+        return $this->findById($id);
+    }
+
+    /**
+     * Update a user's status.
+     *
+     * @param int $id
+     * @param string $status
+     * @return bool
+     */
+    public function updateStatus(int $id, string $status): bool
+    {
+        $stmt = $this->db->prepare("
+            UPDATE users
+            SET status = :status, updated_at = NOW()
+            WHERE id = :id
+        ");
+
+        return $stmt->execute([
+            ':id'     => $id,
+            ':status' => $status,
+        ]);
+    }
+
+    /**
+     * Update a user's role.
+     *
+     * @param int $id
+     * @param int $roleId
+     * @return bool
+     */
+    public function updateRole(int $id, int $roleId): bool
+    {
+        $stmt = $this->db->prepare("
+            UPDATE users
+            SET role_id = :role_id, updated_at = NOW()
+            WHERE id = :id
+        ");
+
+        return $stmt->execute([
+            ':id'      => $id,
+            ':role_id' => $roleId,
+        ]);
+    }
+
+    /**
+     * Admin update of user profile.
+     *
+     * @param int $id
+     * @param array $data
+     * @return bool
+     */
+    public function updateByAdmin(int $id, array $data): bool
+    {
+        $stmt = $this->db->prepare("
+            UPDATE users
+            SET name = :name, email = :email, role_id = :role_id, status = :status, updated_at = NOW()
+            WHERE id = :id
+        ");
+
+        return $stmt->execute([
+            ':id'      => $id,
+            ':name'    => $data['name'],
+            ':email'   => $data['email'],
+            ':role_id' => $data['role_id'],
+            ':status'  => $data['status'],
+        ]);
+    }
 }

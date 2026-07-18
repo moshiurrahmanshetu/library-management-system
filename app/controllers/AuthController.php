@@ -73,6 +73,7 @@ class AuthController extends Controller
         Session::set('user_email', $data['email']);
         Session::set('user_name', $data['name']);
         Session::updateActivity();
+        refresh_permissions();
 
         Session::setFlash('success', 'Welcome! Your account has been created.');
         $this->redirect('/dashboard');
@@ -134,6 +135,7 @@ class AuthController extends Controller
         Session::set('user_email', $user['email']);
         Session::set('user_name', $user['name']);
         Session::updateActivity();
+        refresh_permissions();
 
         $userModel->touchLastLogin($user['id']);
 

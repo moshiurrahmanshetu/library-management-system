@@ -6,6 +6,7 @@ namespace App\Core;
  * Simple request router.
  *
  * Maps HTTP methods and URI patterns to controller actions.
+ * Supports static routes and basic parameter placeholders such as {id}.
  */
 class Router
 {
@@ -50,10 +51,14 @@ class Router
      */
     private function addRoute(string $method, string $uri, $action): self
     {
+        $normalizedUri = $this->normalizeUri($uri);
+
         $this->routes[] = [
             'method' => $method,
-            'uri'    => $this->normalizeUri($uri),
+            'uri'    => $normalizedUri,
             'action' => $action,
+            'regex'  => $this->compileRoute($normalizedUri),
+            'params' => $this->extractParamNames($normalizedUri),
         ];
 
         return $this;
@@ -79,11 +84,13 @@ class Router
                 continue;
             }
 
-            if ($route['uri'] !== $requestUri) {
+            $params = $this->matchRoute($route, $requestUri);
+
+            if ($params === null) {
                 continue;
             }
 
-            $this->runAction($route['action']);
+            $this->runAction($route['action'], $params);
             return;
         }
 
@@ -94,12 +101,13 @@ class Router
      * Execute a route action.
      *
      * @param string|callable $action
+     * @param array $params
      * @return void
      */
-    private function runAction($action): void
+    private function runAction($action, array $params): void
     {
         if (is_callable($action)) {
-            call_user_func($action);
+            call_user_func_array($action, $params);
             return;
         }
 
@@ -117,7 +125,7 @@ class Router
                 throw new \RuntimeException("Method not found: {$controllerClass}::{$method}");
             }
 
-            $controller->$method();
+            $controller->$method(...$params);
             return;
         }
 
@@ -134,6 +142,54 @@ class Router
     {
         $uri = parse_url($uri, PHP_URL_PATH);
         return trim($uri, '/');
+    }
+
+    /**
+     * Convert a route URI to a regular expression.
+     *
+     * @param string $uri
+     * @return string
+     */
+    private function compileRoute(string $uri): string
+    {
+        $escaped = preg_quote($uri, '#');
+        $pattern = preg_replace('#\\{([a-zA-Z_][a-zA-Z0-9_]*)\\}#', '(?P<$1>[^/]+)', $escaped);
+
+        return '#^' . $pattern . '$#';
+    }
+
+    /**
+     * Extract named parameter placeholders from a route URI.
+     *
+     * @param string $uri
+     * @return array
+     */
+    private function extractParamNames(string $uri): array
+    {
+        preg_match_all('#\\{([a-zA-Z_][a-zA-Z0-9_]*)\\}#', $uri, $matches);
+        return $matches[1] ?? [];
+    }
+
+    /**
+     * Match a request URI against a route and return extracted parameters.
+     *
+     * @param array $route
+     * @param string $requestUri
+     * @return array|null
+     */
+    private function matchRoute(array $route, string $requestUri): ?array
+    {
+        if (!preg_match($route['regex'], $requestUri, $matches)) {
+            return null;
+        }
+
+        $params = [];
+
+        foreach ($route['params'] as $name) {
+            $params[$name] = $matches[$name] ?? null;
+        }
+
+        return $params;
     }
 
     /**

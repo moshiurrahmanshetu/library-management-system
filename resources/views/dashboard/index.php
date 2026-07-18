@@ -57,41 +57,66 @@ ob_start();
         </div>
     </div>
 
-    <div class="col-12">
-        <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white fw-semibold">
-                <i class="bi bi-graph-up me-2"></i>Quick Statistics
-            </div>
-            <div class="card-body">
-                <div class="row g-3">
-                    <div class="col-sm-6 col-lg-3">
-                        <div class="p-3 border rounded text-center">
-                            <div class="text-muted small">Total Books</div>
-                            <div class="fs-3 fw-bold text-secondary">-</div>
-                        </div>
-                    </div>
-                    <div class="col-sm-6 col-lg-3">
-                        <div class="p-3 border rounded text-center">
-                            <div class="text-muted small">Borrowed Books</div>
-                            <div class="fs-3 fw-bold text-secondary">-</div>
-                        </div>
-                    </div>
-                    <div class="col-sm-6 col-lg-3">
-                        <div class="p-3 border rounded text-center">
-                            <div class="text-muted small">Overdue Books</div>
-                            <div class="fs-3 fw-bold text-secondary">-</div>
-                        </div>
-                    </div>
-                    <div class="col-sm-6 col-lg-3">
-                        <div class="p-3 border rounded text-center">
-                            <div class="text-muted small">Registered Members</div>
-                            <div class="fs-3 fw-bold text-secondary">-</div>
-                        </div>
+    <?php if ($canViewUsers || $canViewBooks || $canViewReports || $canViewSettings): ?>
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white fw-semibold">
+                    <i class="bi bi-graph-up me-2"></i>Quick Statistics
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <?php if ($canViewUsers): ?>
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="p-3 border rounded text-center">
+                                    <div class="text-muted small">Registered Users</div>
+                                    <div class="fs-3 fw-bold text-secondary">-</div>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if ($canViewBooks): ?>
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="p-3 border rounded text-center">
+                                    <div class="text-muted small">Total Books</div>
+                                    <div class="fs-3 fw-bold text-secondary">-</div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="p-3 border rounded text-center">
+                                    <div class="text-muted small">Borrowed Books</div>
+                                    <div class="fs-3 fw-bold text-secondary">-</div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="p-3 border rounded text-center">
+                                    <div class="text-muted small">Overdue Books</div>
+                                    <div class="fs-3 fw-bold text-secondary">-</div>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if ($canViewReports): ?>
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="p-3 border rounded text-center">
+                                    <div class="text-muted small">Reports</div>
+                                    <div class="fs-3 fw-bold text-secondary">-</div>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if ($canViewSettings): ?>
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="p-3 border rounded text-center">
+                                    <div class="text-muted small">Settings</div>
+                                    <div class="fs-3 fw-bold text-secondary">-</div>
+                                </div>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    <?php endif; ?>
 </div>
 
 <?php
