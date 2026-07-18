@@ -98,8 +98,9 @@ class UserController extends Controller
         $roleModel = new Role();
 
         $this->view('users.edit', [
-            'user'  => $user,
-            'roles' => $roleModel->all(),
+            'user'            => $user,
+            'roles'           => $roleModel->all(),
+            'currentUserRoleId' => (int) $this->user()['role_id'],
         ]);
     }
 
@@ -202,7 +203,7 @@ class UserController extends Controller
         $this->authorize('users.edit');
 
         // Only Super Admin can change roles.
-        if (!can('roles.view')) {
+        if ((int) $this->user()['role_id'] !== 1) {
             Session::setFlash('error', 'You are not authorized to change user roles.');
             $this->redirect('/users');
         }

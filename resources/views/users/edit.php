@@ -12,7 +12,7 @@ $email = $oldData['email'] ?? $user['email'];
 $roleId = $oldData['role_id'] ?? $user['role_id'];
 $status = $oldData['status'] ?? $user['status'];
 
-$canChangeRole = can('roles.view');
+$canChangeRole = ($currentUserRoleId ?? 0) == 1;
 
 ob_start();
 ?>
