@@ -25,8 +25,14 @@ if (can('permissions.view')) {
     $menuItems[] = ['uri' => 'permissions', 'label' => 'Permissions', 'icon' => 'bi-shield-lock', 'permission' => 'permissions.view'];
 }
 
+
 if (can('role_permissions.view')) {
-    $menuItems[] = ['uri' => 'role-permissions', 'label' => 'Role Permissions', 'icon' => 'bi-shield-check', 'permission' => 'role_permissions.view', 'isRolePermissions' => true];
+    $menuItems[] = [
+        'uri' => 'role-permissions',
+        'label' => 'Role Permissions',
+        'icon' => 'bi-shield-check',
+        'permission' => 'role_permissions.view'
+    ];
 }
 
 $bookModuleUris = ['categories', 'authors', 'publishers', 'shelves', 'books'];
@@ -54,15 +60,12 @@ $menuItems[] = ['uri' => 'password/change', 'label' => 'Change Password', 'icon'
         <?php foreach ($menuItems as $item): ?>
             <?php
                 $itemUri = $item['uri'];
-                $isRolePermissions = $item['isRolePermissions'] ?? false;
-                $isActive = false;
-                if ($isRolePermissions) {
-                    $isActive = str_starts_with($currentUri, 'role-permissions');
-                } else {
-                    $isActive = $currentUri === $itemUri || str_starts_with($currentUri, $itemUri . '/');
-                }
+
+                $isActive =
+                    $currentUri === $itemUri ||
+                    str_starts_with($currentUri, $itemUri . '/');
                 $activeClass = $isActive ? 'active bg-primary' : 'text-white';
-                $href = $isRolePermissions ? '#!' : base_url($itemUri); // Role Permissions doesn't have an index page, so we'll link to #!
+                $href = base_url($itemUri); // Role Permissions doesn't have an index page, so we'll link to #!
             ?>
             <a href="<?= $href ?>" class="nav-link rounded mb-2 <?= $activeClass ?>">
                 <i class="bi <?= $item['icon'] ?> me-2"></i>
